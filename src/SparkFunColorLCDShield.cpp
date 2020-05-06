@@ -93,9 +93,9 @@ void LCDShield::LCDData(unsigned char data)
     digitalWrite(LCD_PIN_CS, HIGH); // disable
 }
 
-void LCDShield::init(int type, bool colorSwap)
+void LCDShield::init(LcdDriver_t driver, bool colorSwap)
 {
-    driver = type;
+    LcdDriver = driver;
 
     // Initialize the control pins, and reset display:
     digitalWrite(LCD_PIN_SCK, LOW);  // CLK = LOW
@@ -111,7 +111,7 @@ void LCDShield::init(int type, bool colorSwap)
     digitalWrite(LCD_PIN_DIO, HIGH); // DIO = HIGH
     delayMicroseconds(10);           // 10us delay
 
-    if (driver == EPSON)
+    if (EPSON == LcdDriver)
     {
         LCDCommand(DISCTL); // Display control (0xCA)
         LCDData(0x0C); // 12 = 1100 - CL dividing ratio [don't divide] switching period 8H (default)
@@ -145,7 +145,7 @@ void LCDShield::init(int type, bool colorSwap)
 
         LCDCommand(DISON); // display on (0xAF)
     }
-    else if (driver == PHILIPS)
+    else
     {
         LCDCommand(SLEEPOUT); // Sleep Out (0x11)
         LCDCommand(BSTRON);   // Booster voltage on (0x03)
@@ -176,7 +176,7 @@ void LCDShield::init(int type, bool colorSwap)
 
 void LCDShield::clear(int color)
 {
-    if (driver) // if it's an Epson
+    if (EPSON == LcdDriver)
     {
         LCDCommand(PASET);
         LCDData(0);
@@ -188,7 +188,7 @@ void LCDShield::clear(int color)
 
         LCDCommand(RAMWR);
     }
-    else // otherwise it's a phillips
+    else
     {
         LCDCommand(PASETP);
         LCDData(0);
@@ -214,14 +214,14 @@ void LCDShield::clear(int color)
 
 void LCDShield::contrast(char setting)
 {
-    if (driver == EPSON)
+    if (EPSON == LcdDriver)
     {
         setting &= 0x3F;    // 2 msb's not used, mask out
         LCDCommand(VOLCTR); // electronic volume, this is the contrast/brightness(EPSON)
         LCDData(setting);   // volume (contrast) setting - course adjustment,  -- original was 24
         LCDData(3);         // TODO: Make this coarse adjustment variable, 3's a good place to stay
     }
-    else if (driver == PHILIPS)
+    else
     {
         setting &= 0x7F;    // msb is not used, mask it out
         LCDCommand(SETCON); // contrast command (PHILLIPS)
@@ -241,7 +241,7 @@ void LCDShield::setPixel(int color, unsigned char x, unsigned char y)
     y = (COL_HEIGHT - 1) - y;
     x = (ROW_LENGTH - 1) - x;
 
-    if (driver == EPSON) // if it's an epson
+    if (EPSON == LcdDriver)
     {
         LCDCommand(PASET); // page start/end ram
         LCDData(x);
@@ -256,7 +256,7 @@ void LCDShield::setPixel(int color, unsigned char x, unsigned char y)
         LCDData(((color & 0x0F) << 4) | (color >> 8));
         LCDData(color & 0x0FF);
     }
-    else if (driver == PHILIPS) // otherwise it's a phillips
+    else
     {
         LCDCommand(PASETP); // page start/end ram
         LCDData(x);
@@ -303,45 +303,32 @@ void LCDShield::setArc(
 
             for (int i = 0; i < numSegments; i++)
             {
-                if (arcSegments[i] == NNE)
+                switch (arcSegments[i])
                 {
-                    // SHOW NNE
-                    setPixel(color, x0 - y, y0 + x);
-                }
-                if (arcSegments[i] == ENE)
-                {
-                    // SHOW ENE
-                    setPixel(color, x0 - x, y0 + y);
-                }
-                if (arcSegments[i] == ESE)
-                {
-                    // SHOW ESE
-                    setPixel(color, x0 + x, y0 + y);
-                }
-                if (arcSegments[i] == SSE)
-                {
-                    // SHOW SSE
-                    setPixel(color, x0 + y, y0 + x);
-                }
-                if (arcSegments[i] == SSW)
-                {
-                    // SHOW SSW
-                    setPixel(color, x0 + y, y0 - x);
-                }
-                if (arcSegments[i] == WSW)
-                {
-                    // SHOW WSW
-                    setPixel(color, x0 + x, y0 - y);
-                }
-                if (arcSegments[i] == WNW)
-                {
-                    // SHOW WNW
-                    setPixel(color, x0 - x, y0 - y);
-                }
-                if (arcSegments[i] == NNW)
-                {
-                    // SHOW NNW
-                    setPixel(color, x0 - y, y0 - x);
+                    case NNE:
+                        setPixel(color, x0 - y, y0 + x);
+                        break;
+                    case ENE:
+                        setPixel(color, x0 - x, y0 + y);
+                        break;
+                    case ESE:
+                        setPixel(color, x0 + x, y0 + y);
+                        break;
+                    case SSE:
+                        setPixel(color, x0 + y, y0 + x);
+                        break;
+                    case SSW:
+                        setPixel(color, x0 + y, y0 - x);
+                        break;
+                    case WSW:
+                        setPixel(color, x0 + x, y0 - y);
+                        break;
+                    case WNW:
+                        setPixel(color, x0 - x, y0 - y);
+                        break;
+                    case NNW:
+                        setPixel(color, x0 - y, y0 - x);
+                        break;
                 }
             }
         }
@@ -419,7 +406,7 @@ void LCDShield::setChar(char c, int x, int y, int fColor, int bColor)
     // get pointer to the last byte of the desired character
     pChar = pFont + (nBytes * (c - 0x1F)) + nBytes - 1;
 
-    if (driver) // if it's an epson
+    if (EPSON == LcdDriver) // if it's an epson
     {
         // Row address set (command 0x2B)
         LCDCommand(PASET);
@@ -714,11 +701,11 @@ void LCDShield::printBMP(char image_main[2048])
 
 void LCDShield::off(void)
 {
-    if (driver) // If it's an epson
+    if (EPSON == LcdDriver)
     {
         LCDCommand(DISOFF);
     }
-    else // otherwise it's a phillips
+    else
     {
         LCDCommand(DISPOFF);
     }
@@ -726,11 +713,11 @@ void LCDShield::off(void)
 
 void LCDShield::on(void)
 {
-    if (driver) // If it's an epson
+    if (EPSON == LcdDriver)
     {
         LCDCommand(DISON);
     }
-    else // otherwise it's a phillips
+    else
     {
         LCDCommand(DISPON);
     }
