@@ -14,70 +14,64 @@
 #ifndef SparkFunColorLCDShield_H
 #define SparkFunColorLCDShield_H
 
-#define PHILLIPS 0
-#define PHILIPS  0
-#define EPSON    1
+#define PHILLIPS (0)
+#define PHILIPS  (0)
+#define EPSON    (1)
 
 //#include <WProgram.h>
 
 #include <inttypes.h>
 #include <avr/pgmspace.h>
 
-//*******************************************************
-//						Macros
-//*******************************************************
-#define sbi(var, mask) ((var) |= (uint8_t)(1 << mask))
-#define cbi(var, mask) ((var) &= (uint8_t) ~(1 << mask))
-
 //********************************************************************
 //
 //					LCD Dimension Definitions
 //
 //********************************************************************
-#define ROW_LENGTH 132
-#define COL_HEIGHT 132
-#define ENDPAGE    132
-#define ENDCOL     130
+#define ROW_LENGTH (132)
+#define COL_HEIGHT (132)
+#define ENDPAGE    (132)
+#define ENDCOL     (130)
 
 //********************************************************************
 //
 //					EPSON Controller Definitions
 //
 //********************************************************************
-#define DISON   0xAF // Display on
-#define DISOFF  0xAE // Display off
-#define DISNOR  0xA6 // Normal display
-#define DISINV  0xA7 // Inverse display
-#define SLPIN   0x95 // Sleep in
-#define SLPOUT  0x94 // Sleep out
-#define COMSCN  0xBB // Common scan direction
-#define DISCTL  0xCA // Display control
-#define PASET   0x75 // Page address set
-#define CASET   0x15 // Column address set
-#define DATCTL  0xBC // Data scan direction, etc.
-#define RGBSET8 0xCE // 256-color position set
-#define RAMWR   0x5C // Writing to memory
-#define RAMRD   0x5D // Reading from memory
-#define PTLIN   0xA8 // Partial display in
-#define PTLOUT  0xA9 // Partial display out
-#define RMWIN   0xE0 // Read and modify write
-#define RMWOUT  0xEE // End
-#define ASCSET  0xAA // Area scroll set
-#define SCSTART 0xAB // Scroll start set
-#define OSCON   0xD1 // Internal oscillation on
-#define OSCOFF  0xD2 // Internal osciallation off
-#define PWRCTR  0x20 // Power control
-#define VOLCTR  0x81 // Electronic volume control
-#define VOLUP   0xD6 // Increment electronic control by 1
-#define VOLDOWN 0xD7 // Decrement electronic control by 1
-#define TMPGRD  0x82 // Temperature gradient set
-#define EPCTIN  0xCD // Control EEPROM
-#define EPCOUT  0xCC // Cancel EEPROM control
-#define EPMWR   0xFC // Write into EEPROM
-#define EPMRD   0xFD // Read from EEPROM
-#define EPSRRD1 0x7C // Read register 1
-#define EPSRRD2 0x7D // Read register 2
-#define NOP     0x25 // No op
+#define DISON   (0xAF) // Display on
+#define DISOFF  (0xAE) // Display off
+#define DISNOR  (0xA6) // Normal display
+#define DISINV  (0xA7) // Inverse display
+#define SLPIN   (0x95) // Sleep in
+#define SLPOUT  (0x94) // Sleep out
+#define COMSCN  (0xBB) // Common scan direction
+#define DISCTL  (0xCA) // Display control
+#define PASET   (0x75) // Page address set
+#define CASET   (0x15) // Column address set
+#define DATCTL  (0xBC) // Data scan direction, etc.
+#define RGBSET8 (0xCE) // 256-color position set
+#define RAMWR   (0x5C) // Writing to memory
+#define RAMRD   (0x5D) // Reading from memory
+#define PTLIN   (0xA8) // Partial display in
+#define PTLOUT  (0xA9) // Partial display out
+#define RMWIN   (0xE0) // Read and modify write
+#define RMWOUT  (0xEE) // End
+#define ASCSET  (0xAA) // Area scroll set
+#define SCSTART (0xAB) // Scroll start set
+#define OSCON   (0xD1) // Internal oscillation on
+#define OSCOFF  (0xD2) // Internal osciallation off
+#define PWRCTR  (0x20) // Power control
+#define VOLCTR  (0x81) // Electronic volume control
+#define VOLUP   (0xD6) // Increment electronic control by 1
+#define VOLDOWN (0xD7) // Decrement electronic control by 1
+#define TMPGRD  (0x82) // Temperature gradient set
+#define EPCTIN  (0xCD) // Control EEPROM
+#define EPCOUT  (0xCC) // Cancel EEPROM control
+#define EPMWR   (0xFC) // Write into EEPROM
+#define EPMRD   (0xFD) // Read from EEPROM
+#define EPSRRD1 (0x7C) // Read register 1
+#define EPSRRD2 (0x7D) // Read register 2
+#define NOP     (0x25) // No op
 
 //********************************************************************
 //
@@ -85,112 +79,80 @@
 //
 //********************************************************************
 // LCD Commands
-#define NOPP     0x00 // No operation
-#define BSTRON   0x03 // Booster voltage on
-#define SLEEPIN  0x10 // Sleep in
-#define SLEEPOUT 0x11 // Sleep out
-#define NORON    0x13 // Normal display mode on
-#define INVOFF   0x20 // Display inversion off
-#define INVON    0x21 // Display inversion on
-#define SETCON   0x25 // Set contrast
-#define DISPOFF  0x28 // Display off
-#define DISPON   0x29 // Display on
-#define CASETP   0x2A // Column address set
-#define PASETP   0x2B // Page address set
-#define RAMWRP   0x2C // Memory write
-#define RGBSET   0x2D // Color set
-#define MADCTL   0x36 // Memory data access control
-#define COLMOD   0x3A // Interface pixel format
-#define DISCTR   0xB9 // Super frame inversion
-#define EC       0xC0 // Internal or external oscillator
+#define NOPP     (0x00) // No operation
+#define BSTRON   (0x03) // Booster voltage on
+#define SLEEPIN  (0x10) // Sleep in
+#define SLEEPOUT (0x11) // Sleep out
+#define NORON    (0x13) // Normal display mode on
+#define INVOFF   (0x20) // Display inversion off
+#define INVON    (0x21) // Display inversion on
+#define SETCON   (0x25) // Set contrast
+#define DISPOFF  (0x28) // Display off
+#define DISPON   (0x29) // Display on
+#define CASETP   (0x2A) // Column address set
+#define PASETP   (0x2B) // Page address set
+#define RAMWRP   (0x2C) // Memory write
+#define RGBSET   (0x2D) // Color set
+#define MADCTL   (0x36) // Memory data access control
+#define COLMOD   (0x3A) // Interface pixel format
+#define DISCTR   (0xB9) // Super frame inversion
+#define EC       (0xC0) // Internal or external oscillator
 
 //*******************************************************
 //				12-Bit Color Definitions
 //*******************************************************
-#define BLACK     0x000
-#define NAVY      0x008
-#define BLUE      0x00F
-#define TEAL      0x088
-#define EMERALD   0x0C5
-#define GREEN     0x0F0
-#define CYAN      0x0FF
-#define SLATE     0x244
-#define INDIGO    0x408
-#define TURQUOISE 0x4ED
-#define OLIVE     0x682
-#define MAROON    0x800
-#define PURPLE    0x808
-#define GRAY      0x888
-#define SKYBLUE   0x8CE
-#define BROWN     0xB22
-#define CRIMSON   0xD13
-#define ORCHID    0xD7D
-#define RED       0xF00
-#define MAGENTA   0xF0F
-#define ORANGE    0xF40
-#define PINK      0xF6A
-#define CORAL     0xF75
-#define SALMON    0xF87
-#define GOLD      0xFD0
-#define YELLOW    0xFF0
-#define WHITE     0xFFF
+#define BLACK     (0x000)
+#define NAVY      (0x008)
+#define BLUE      (0x00F)
+#define TEAL      (0x088)
+#define EMERALD   (0x0C5)
+#define GREEN     (0x0F0)
+#define CYAN      (0x0FF)
+#define SLATE     (0x244)
+#define INDIGO    (0x408)
+#define TURQUOISE (0x4ED)
+#define OLIVE     (0x682)
+#define MAROON    (0x800)
+#define PURPLE    (0x808)
+#define GRAY      (0x888)
+#define SKYBLUE   (0x8CE)
+#define BROWN     (0xB22)
+#define CRIMSON   (0xD13)
+#define ORCHID    (0xD7D)
+#define RED       (0xF00)
+#define MAGENTA   (0xF0F)
+#define ORANGE    (0xF40)
+#define PINK      (0xF6A)
+#define CORAL     (0xF75)
+#define SALMON    (0xF87)
+#define GOLD      (0xFD0)
+#define YELLOW    (0xFF0)
+#define WHITE     (0xFFF)
 
 //*******************************************************
 //                              Circle Definitions
 //*******************************************************
-#define FILL 0
+#define FILL (0)
 
 //******************************************************
 //                       Arc Definitions
 //******************************************************
-#define ESE 1
-#define ENE 2
-#define WSW 3
-#define WNW 4
-#define SSE 5
-#define NNE 6
-#define SSW 7
-#define NNW 8
+#define ESE (1)
+#define ENE (2)
+#define WSW (3)
+#define WNW (4)
+#define SSE (5)
+#define NNE (6)
+#define SSW (7)
+#define NNW (8)
 
-#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
-//*	Arduino Mega 2560 bit numbers
-#define LCD_PIN_RES 5 // D8
-#define LCD_PIN_CS  6 // D9
-#define LCD_PIN_DIO 5 // D11
-#define LCD_PIN_SCK 7 // D13
-
-//*	Arduino Mega ports
-//* NOTE: See LCDShield::LCDShield() if making changes here
-#define LCD_PORT_CS  PORTH
-#define LCD_PORT_SCK PORTB
-#define LCD_PORT_RES PORTH
-#define LCD_PORT_DIO PORTB
-#elif defined(__AVR_ATmega32U4__)
-//*	Standard Arduino Leonardo port bits
-#define LCD_PIN_RES  4 // D8
-#define LCD_PIN_CS   5 // D9
-#define LCD_PIN_DIO  7 // D11
-#define LCD_PIN_SCK  7 // D13
-
-//*	Arduino Leonardo ports:
-#define LCD_PORT_RES PORTB
-#define LCD_PORT_CS  PORTB
-#define LCD_PORT_DIO PORTB
-#define LCD_PORT_SCK PORTC
-#else
-//*	Arduino Duemilanove bit numbers
-#define LCD_PIN_RES  0 // D8
-#define LCD_PIN_CS   1 // D9
-#define LCD_PIN_DIO  3 // D11
-#define LCD_PIN_SCK  5 // D13
-//#define LCD_PORT	PORTB
-
-//*	Arduino Duemilanove ports
-#define LCD_PORT_CS  PORTB
-#define LCD_PORT_SCK PORTB
-#define LCD_PORT_RES PORTB
-#define LCD_PORT_DIO PORTB
-#endif
+//******************************************************
+//                       Pin Definitions
+//******************************************************
+#define LCD_PIN_RES (8)
+#define LCD_PIN_CS  (9)
+#define LCD_PIN_DIO (11)
+#define LCD_PIN_SCK (13)
 
 const unsigned char FONT8x16[97][16] PROGMEM = {
     {0x08, 0x10, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // columns, rows, bytes, ...

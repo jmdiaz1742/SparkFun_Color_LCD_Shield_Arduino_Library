@@ -15,10 +15,6 @@
 
 #include "SparkFunColorLCDShield.h"
 
-/*extern "C" {
-    #include "wiring.h"
-}*/
-
 #include "Arduino.h"
 
 static char x_offset = 0;
@@ -26,83 +22,75 @@ static char y_offset = 0;
 
 LCDShield::LCDShield()
 {
-#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
-    DDRB = ((1 << LCD_PIN_DIO) | (1 << LCD_PIN_SCK)); // Set DIO and SCK pins on PORTB as outputs
-    DDRH = ((1 << LCD_PIN_CS) | (1 << LCD_PIN_RES));  // Set CS and RES pins PORTH as outputs
-#elif defined(__AVR_ATmega32U4__)
-    DDRB = (1 << LCD_PIN_RES) | (1 << LCD_PIN_CS) | (1 << LCD_PIN_DIO);
-    DDRC = (1 << LCD_PIN_SCK);
-#else
-    // Set the control pins as outputs
-    DDRB = ((1 << LCD_PIN_CS) | (1 << LCD_PIN_DIO) | (1 << LCD_PIN_SCK) | (1 << LCD_PIN_RES));
-#endif
-
-    DDRD  = 0x00;
-    PORTD = 0xFF;
+    // Set LCD pins as outputs
+    pinMode(LCD_PIN_RES, OUTPUT);
+    pinMode(LCD_PIN_CS, OUTPUT);
+    pinMode(LCD_PIN_DIO, OUTPUT);
+    pinMode(LCD_PIN_SCK, OUTPUT);
 }
 
 void LCDShield::LCDCommand(unsigned char data)
 {
     char jj;
 
-    cbi(LCD_PORT_CS, LCD_PIN_CS);   // enable chip
-    cbi(LCD_PORT_DIO, LCD_PIN_DIO); // output low on data out (9th bit low = command)
+    digitalWrite(LCD_PIN_CS, LOW);  // enable chip
+    digitalWrite(LCD_PIN_DIO, LOW); // output low on data out (9th bit low = command)
 
-    cbi(LCD_PORT_SCK, LCD_PIN_SCK); // send clock pulse
+    digitalWrite(LCD_PIN_SCK, LOW); // send clock pulse
     delayMicroseconds(1);
-    sbi(LCD_PORT_SCK, LCD_PIN_SCK);
+    digitalWrite(LCD_PIN_SCK, HIGH);
 
     for (jj = 0; jj < 8; jj++)
     {
         if ((data & 0x80) == 0x80)
         {
-            sbi(LCD_PORT_DIO, LCD_PIN_DIO);
+            digitalWrite(LCD_PIN_DIO, HIGH);
         }
         else
         {
-            cbi(LCD_PORT_DIO, LCD_PIN_DIO);
+            digitalWrite(LCD_PIN_DIO, LOW);
         }
 
-        cbi(LCD_PORT_SCK, LCD_PIN_SCK); // send clock pulse
+        digitalWrite(LCD_PIN_SCK, LOW); // send clock pulse
         delayMicroseconds(1);
-        sbi(LCD_PORT_SCK, LCD_PIN_SCK);
+        digitalWrite(LCD_PIN_SCK, HIGH);
 
         data <<= 1;
     }
 
-    sbi(LCD_PORT_CS, LCD_PIN_CS); // disable
+    digitalWrite(LCD_PIN_CS, HIGH); // disable
 }
 
 void LCDShield::LCDData(unsigned char data)
 {
     char j;
 
-    cbi(LCD_PORT_CS, LCD_PIN_CS);   // enable chip
-    sbi(LCD_PORT_DIO, LCD_PIN_DIO); // output high on data out (9th bit high = data)
+    digitalWrite(LCD_PIN_CS, LOW);   // enable chip
+    digitalWrite(LCD_PIN_DIO, HIGH); // output high on data out (9th bit high = data)
 
-    cbi(LCD_PORT_SCK, LCD_PIN_SCK); // send clock pulse
+    digitalWrite(LCD_PIN_SCK, LOW); // send clock pulse
     delayMicroseconds(1);
-    sbi(LCD_PORT_SCK, LCD_PIN_SCK); // send clock pulse
+    digitalWrite(LCD_PIN_SCK, HIGH); // send clock pulse
 
     for (j = 0; j < 8; j++)
     {
         if ((data & 0x80) == 0x80)
         {
-            sbi(LCD_PORT_DIO, LCD_PIN_DIO);
+            digitalWrite(LCD_PIN_DIO, HIGH);
         }
         else
         {
-            cbi(LCD_PORT_DIO, LCD_PIN_DIO);
+            digitalWrite(LCD_PIN_DIO, LOW);
         }
 
-        cbi(LCD_PORT_SCK, LCD_PIN_SCK); // send clock pulse
+        digitalWrite(LCD_PIN_SCK, LOW); // send clock pulse
         delayMicroseconds(1);
-        sbi(LCD_PORT_SCK, LCD_PIN_SCK);
+        digitalWrite(LCD_PIN_SCK, HIGH);
 
         data <<= 1;
     }
 
-    LCD_PORT_CS |= (1 << LCD_PIN_CS); // disable
+    digitalWrite(LCD_PIN_CS, HIGH); // disable
 }
 
 void LCDShield::init(int type, bool colorSwap)
@@ -110,18 +98,18 @@ void LCDShield::init(int type, bool colorSwap)
     driver = type;
 
     // Initialize the control pins, and reset display:
-    cbi(LCD_PORT_SCK, LCD_PIN_SCK); // CLK = LOW
-    cbi(LCD_PORT_DIO, LCD_PIN_DIO); // DIO = LOW
-    delayMicroseconds(10);          // 10us delay
-    sbi(LCD_PORT_CS, LCD_PIN_CS);   // CS = HIGH
-    delayMicroseconds(10);          // 10uS Delay
-    cbi(LCD_PORT_RES, LCD_PIN_RES); // RESET = LOW
-    delay(200);                     // 200ms delay
-    sbi(LCD_PORT_RES, LCD_PIN_RES); // RESET = HIGH
-    delay(200);                     // 200ms delay
-    sbi(LCD_PORT_SCK, LCD_PIN_SCK); // SCK = HIGH
-    sbi(LCD_PORT_DIO, LCD_PIN_DIO); // DIO = HIGH
-    delayMicroseconds(10);          // 10us delay
+    digitalWrite(LCD_PIN_SCK, LOW);  // CLK = LOW
+    digitalWrite(LCD_PIN_DIO, LOW);  // DIO = LOW
+    delayMicroseconds(10);           // 10us delay
+    digitalWrite(LCD_PIN_CS, HIGH);  // CS = HIGH
+    delayMicroseconds(10);           // 10uS Delay
+    digitalWrite(LCD_PIN_RES, LOW);  // RESET = LOW
+    delay(200);                      // 200ms delay
+    digitalWrite(LCD_PIN_RES, HIGH); // RESET = HIGH
+    delay(200);                      // 200ms delay
+    digitalWrite(LCD_PIN_SCK, HIGH); // SCK = HIGH
+    digitalWrite(LCD_PIN_DIO, HIGH); // DIO = HIGH
+    delayMicroseconds(10);           // 10us delay
 
     if (driver == EPSON)
     {
